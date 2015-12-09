@@ -445,7 +445,7 @@ var utils = UE.utils = {
     },
 
     /**
-     * 将str中的html符号转义,将转义“'，&，<，"，>，”，“”七个字符
+     * 将str中的html符号转义,将转义“'，&，<，"，>，”，“”,— 八个字符
      * @method unhtml
      * @param { String } str 需要转义的字符串
      * @return { String } 转义后的字符串
@@ -459,7 +459,7 @@ var utils = UE.utils = {
      * ```
      */
     unhtml:function (str, reg) {
-        return str ? str.replace(reg || /[&<">'](?:(amp|lt|ldquo|rdquo|quot|gt|#39|nbsp|#\d+);)?/g, function (a, b) {
+        return str ? str.replace(reg || /[&<">'](?:(amp|lt|ldquo|rdquo|mdash|quot|gt|#39|nbsp|#\d+);)?/g, function (a, b) {
             if (b) {
                 return a;
             } else {
@@ -470,7 +470,8 @@ var utils = UE.utils = {
                      '“':'&ldquo;',
                     '”':'&rdquo;',
                     '>':'&gt;',
-                    "'":'&#39;'
+                    "'":'&#39;',
+                    '—':'&mdash'
                 }[a]
             }
 
