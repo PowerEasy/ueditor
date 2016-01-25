@@ -52,7 +52,8 @@ UE.plugin.register('insertfile', function (){
 
                     var i, item, icon, title,
                         html = '',
-                        URL = me.getOpt('UEDITOR_HOME_URL'),
+                      //  URL = me.getOpt('UEDITOR_HOME_URL'),
+                        URL = me.getOpt('attachmentPath'),
                         iconDir = URL + (URL.substr(URL.length - 1) == '/' ? '':'/') + 'dialogs/attachment/fileTypeImages/';
                     for (i = 0; i < filelist.length; i++) {
                         item = filelist[i];
