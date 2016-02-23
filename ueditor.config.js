@@ -336,7 +336,9 @@
         //表格是否可以拖拽
         //,tableDragable: true
 
-
+        //tableFixedWidth
+        //表格固定宽度。
+        //,tableFixedWidth:"1000px"
 
         //sourceEditor
         //源码的查看方式,codemirror 是代码高亮，textarea是文本框,默认是codemirror
