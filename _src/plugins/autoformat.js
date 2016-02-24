@@ -1,3 +1,5 @@
+/* global browser */
+/* global domUtils */
 /**
  * 自动排版。
  * @file
@@ -14,13 +16,15 @@ UE.plugins['autoformat'] = function () {
     var me = this;
     me.setOpt({
         'autoFormatTags': 'b,big,code,del,dfn,em,font,i,ins,kbd,q,samp,small,span,strike,strong,sub,sup,tt,u,var',
-        'autoFormatAttributes': 'class,style,lang,width,height,hspace,valign'
+        'autoFormatAttributes': 'class,style,lang,width,height,hspace,valign',
+        'autoFormatSavedStyles': 'text-indent'
     });
     me.commands['autoformat'] = {
         execCommand: function (cmdName, tags, style, attrs, notIncludeA) {
 
             var tagReg = new RegExp('^(?:' + (tags || this.options.autoFormatTags).replace(/,/g, '|') + ')$', 'i'),
                 autoFormatAttributes = style ? [] : (attrs || this.options.autoFormatAttributes).split(','),
+                savedStyles = this.options.autoFormatSavedStyles.split(','),
                 range = new dom.Range(this.document),
                 bookmark, node, parent,
                 filter = function (node) {
@@ -45,6 +49,31 @@ UE.plugins['autoformat'] = function () {
                     }
                 }
                 return !node.attributes.length;
+            }
+            /**
+             * 输出要保留的样式
+             * @param  {Node} node 节点
+             * @param  {array} savedStyles 要保留的样式，不被清理掉。
+             */
+            function outputSytles(node,savedStyles) {
+                var styles,
+                    outputStyles = [];
+                if (node.attributes && node.attributes.length > 0 && node.attributes['style']) {
+                    styles = node.attributes['style'].value.split(';');
+                    for (var index = 0; index < styles.length; index++) {
+                        var key = styles[index];
+                        if (key.split(':')[0] in savedStyles) {
+                            continue;
+                        } else {
+                            outputStyles.push(key);
+                        }
+
+
+                    }
+
+                }
+                
+                return outputStyles;
             }
 
             function doRemove(range) {
@@ -110,7 +139,13 @@ UE.plugins['autoformat'] = function () {
                             } else {
                                 //trace:939  不能把list上的样式去掉
                                 if (!dtd.$tableContent[current.tagName] && !dtd.$list[current.tagName]) {
-                                    domUtils.removeAttributes(current, removeFormatAttributes);
+                                    //不排除右对齐
+                                    var styles = outputSytles(current,savedStyles).join(';')
+                                    domUtils.removeAttributes(current, autoFormatAttributes);
+                                    if(styles){
+                                         domUtils.setAttributes(current,{style:styles});
+                                    }
+                                   
                                     if (isRedundantSpan(current)) {
                                         domUtils.remove(current, true);
                                     }
@@ -125,11 +160,11 @@ UE.plugins['autoformat'] = function () {
                 //trace:1096 不能把td上的样式去掉，比如边框
                 var pN = bookmark.start.parentNode;
                 if (domUtils.isBlockElm(pN) && !dtd.$tableContent[pN.tagName] && !dtd.$list[pN.tagName]) {
-                    domUtils.removeAttributes(pN, removeFormatAttributes);
+                    domUtils.removeAttributes(pN, autoFormatAttributes);
                 }
                 pN = bookmark.end.parentNode;
                 if (bookmark.end && domUtils.isBlockElm(pN) && !dtd.$tableContent[pN.tagName] && !dtd.$list[pN.tagName]) {
-                    domUtils.removeAttributes(pN, removeFormatAttributes);
+                    domUtils.removeAttributes(pN, autoFormatAttributes);
                 }
                 range.moveToBookmark(bookmark).moveToBookmark(bookmark1);
                 //清除冗余的代码 <b><bookmark></b>

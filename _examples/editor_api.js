@@ -34,6 +34,7 @@
             'plugins/iframe.js',
             'plugins/scrawl.js',
             'plugins/removeformat.js',
+            'plugins/autoformat.js',
             'plugins/blockquote.js',
             'plugins/convertcase.js',
             'plugins/indent.js',
