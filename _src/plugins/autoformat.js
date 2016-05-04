@@ -55,7 +55,7 @@ UE.plugins['autoformat'] = function () {
              * @param  {Node} node 节点
              * @param  {array} savedStyles 要保留的样式，不被清理掉。
              */
-            function outputSytles(node,savedStyles) {
+            function outputSytles(node, savedStyles) {
                 var styles,
                     outputStyles = [];
                 if (node.attributes && node.attributes.length > 0 && node.attributes['style']) {
@@ -72,8 +72,24 @@ UE.plugins['autoformat'] = function () {
                     }
 
                 }
-                
+
                 return outputStyles;
+            }
+            
+            /**
+             * 格式化图片和表格。
+             * @param  {Range} range 选择的范围。
+             */
+            function formatImageAndTable(range) {
+                
+                $(range.startContainer).find('img').each(function (n) {
+                    var $element = $(this);
+                    //宽度大于50的图片才居中，
+                    if ($element.width() > 50) {
+                        $element.css('text-align', 'center');
+                    }
+                });
+                $(range.startContainer).find('table').prop('align', 'center');
             }
 
             function doRemove(range) {
@@ -140,12 +156,12 @@ UE.plugins['autoformat'] = function () {
                                 //trace:939  不能把list上的样式去掉
                                 if (!dtd.$tableContent[current.tagName] && !dtd.$list[current.tagName]) {
                                     //不排除右对齐
-                                    var styles = outputSytles(current,savedStyles).join(';')
+                                    var styles = outputSytles(current, savedStyles).join(';')
                                     domUtils.removeAttributes(current, autoFormatAttributes);
-                                    if(styles){
-                                         domUtils.setAttributes(current,{style:styles});
+                                    if (styles) {
+                                        domUtils.setAttributes(current, { style: styles });
                                     }
-                                   
+
                                     if (isRedundantSpan(current)) {
                                         domUtils.remove(current, true);
                                     }
@@ -197,10 +213,9 @@ UE.plugins['autoformat'] = function () {
                 }
             }
 
-
-
             range = this.selection.getRange();
             doRemove(range);
+            formatImageAndTable(range);
             range.select();
 
         }
