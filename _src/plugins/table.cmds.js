@@ -34,7 +34,7 @@
                 for (var r = 0; r < rowsNum; r++) {
                     html.push('<tr' + (r == 0 ? ' class="firstRow"' : '') + '>');
                     for (var c = 0; c < colsNum; c++) {
-                        html.push('<td width="' + tdWidth + '"  vAlign="' + opt.tdvalign + '" >' + (browser.ie && browser.version < 11 ? domUtils.fillChar : '<br/>') + '</td>')
+                        html.push('<td width="' + tdWidth + '" style="border-width: 1px; border-style: solid;"  vAlign="' + opt.tdvalign + '" >' + (browser.ie && browser.version < 11 ? domUtils.fillChar : '<br/>') + '</td>')
                     }
                     html.push('</tr>')
                 }
@@ -581,32 +581,32 @@
     };
 
     UE.commands["adaptbytext"] =
-    UE.commands["adaptbyfixedwidth"] =
-    UE.commands["adaptbywindow"] = {
-        queryCommandState: function () {
-            return getTableItemsByRange(this).table ? 0 : -1
-        },
-        execCommand: function (cmd) {
-            var tableItems = getTableItemsByRange(this),
-                table = tableItems.table;
-            if (table) {
-                if (cmd == 'adaptbywindow') {
-                    resetTdWidth(table, this);
-                } else {
-                    var cells = domUtils.getElementsByTagName(table, "td th");
-                    utils.each(cells, function (cell) {
-                        cell.removeAttribute("width");
-                    });
-                    table.removeAttribute("width");
-                }
+        UE.commands["adaptbyfixedwidth"] =
+        UE.commands["adaptbywindow"] = {
+            queryCommandState: function () {
+                return getTableItemsByRange(this).table ? 0 : -1
+            },
+            execCommand: function (cmd) {
+                var tableItems = getTableItemsByRange(this),
+                    table = tableItems.table;
+                if (table) {
+                    if (cmd == 'adaptbywindow') {
+                        resetTdWidth(table, this);
+                    } else {
+                        var cells = domUtils.getElementsByTagName(table, "td th");
+                        utils.each(cells, function (cell) {
+                            cell.removeAttribute("width");
+                        });
+                        table.removeAttribute("width");
+                    }
 
-                if (cmd == 'adaptbyfixedwidth') {
-                    table.setAttribute('width', this.options.tableFixedWidth?this.options.tableFixedWidth:"1000px");
-                    table.style.margin = 'auto';
+                    if (cmd == 'adaptbyfixedwidth') {
+                        table.setAttribute('width', this.options.tableFixedWidth ? this.options.tableFixedWidth : "1000px");
+                        table.style.margin = 'auto';
+                    }
                 }
             }
-        }
-    };
+        };
 
     //平均分配各列
     UE.commands['averagedistributecol'] = {
@@ -621,7 +621,8 @@
 
             function getAverageWidth() {
                 var tb = ut.table,
-                    averageWidth, sumWidth = 0, colsNum = 0,
+                    averageWidth, sumWidth = 0,
+                    colsNum = 0,
                     tbAttr = getDefaultValue(me, tb);
 
                 if (ut.isFullRow()) {
@@ -812,7 +813,7 @@
                 var arr = domUtils.getElementsByTagName(table, "td").concat(
                     domUtils.getElementsByTagName(table, "th"),
                     domUtils.getElementsByTagName(table, "caption")
-                    );
+                );
                 utils.each(arr, function (node) {
                     node.style.borderColor = color;
                 });
@@ -908,6 +909,7 @@
             })
         }
     };
+
     function resetTdWidth(table, editor) {
         var tds = domUtils.getElementsByTagName(table, 'td th');
         utils.each(tds, function (td) {
