@@ -66,7 +66,12 @@ UE.plugin.register('simpleupload', function () {
                             body = (iframe.contentDocument || iframe.contentWindow.document).body,
                             result = body.innerText || body.textContent || '';
                         json = (new Function("return " + result))();
-                        link = me.options.imageUrlPrefix + json.url;
+                        if (json.url.indexOf('/Content') === 0) {
+                            link = json.url;
+                        } else {
+                            link = me.options.imageUrlPrefix + json.url;
+                        }
+
                         if (json.state == 'SUCCESS' && json.url) {
                             loader = me.document.getElementById(loadingId);
                             domUtils.removeClasses(loader, 'loadingclass');
@@ -83,6 +88,7 @@ UE.plugin.register('simpleupload', function () {
                     form.reset();
                     domUtils.un(iframe, 'load', callback);
                 }
+
                 function showErrorLoader(title) {
                     if (loadingId) {
                         var loader = me.document.getElementById(loadingId);
@@ -138,12 +144,12 @@ UE.plugin.register('simpleupload', function () {
             'ready': function () {
                 //设置loading的样式
                 utils.cssRule('loading',
-                    '.loadingclass{display:inline-block;cursor:default;background: url(\''
-                    + this.options.themePath
-                    + this.options.theme + '/images/loading.gif\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;}\n' +
-                    '.loaderrorclass{display:inline-block;cursor:default;background: url(\''
-                    + this.options.themePath
-                    + this.options.theme + '/images/loaderror.png\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;' +
+                    '.loadingclass{display:inline-block;cursor:default;background: url(\'' +
+                    this.options.themePath +
+                    this.options.theme + '/images/loading.gif\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;}\n' +
+                    '.loaderrorclass{display:inline-block;cursor:default;background: url(\'' +
+                    this.options.themePath +
+                    this.options.theme + '/images/loaderror.png\') no-repeat center center transparent;border:1px solid #cccccc;margin-right:1px;height: 22px;width: 22px;' +
                     '}',
                     this.document);
             },

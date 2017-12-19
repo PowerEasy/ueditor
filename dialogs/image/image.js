@@ -74,7 +74,9 @@
     function initButtons() {
 
         dialog.onok = function () {
-            var remote = false, list = [], id, tabs = $G('tabhead').children;
+            var remote = false,
+                list = [],
+                id, tabs = $G('tabhead').children;
             for (var i = 0; i < tabs.length; i++) {
                 if (domUtils.hasClass(tabs[i], 'focus')) {
                     id = tabs[i].getAttribute('data-content-id');
@@ -302,7 +304,7 @@
         /* 初始化容器 */
         initUploader: function () {
             var _this = this,
-                $ = jQuery,    // just in case. Make sure it's not an other libaray.
+                $ = jQuery, // just in case. Make sure it's not an other libaray.
                 $wrap = _this.$wrap,
                 // 图片容器
                 $queue = $wrap.find('.filelist'),
@@ -336,10 +338,10 @@
                 supportTransition = (function () {
                     var s = document.createElement('p').style,
                         r = 'transition' in s ||
-                            'WebkitTransition' in s ||
-                            'MozTransition' in s ||
-                            'msTransition' in s ||
-                            'OTransition' in s;
+                        'WebkitTransition' in s ||
+                        'MozTransition' in s ||
+                        'msTransition' in s ||
+                        'OTransition' in s;
                     s = null;
                     return r;
                 })(),
@@ -372,7 +374,7 @@
                 server: actionUrl,
                 fileVal: editor.getOpt('imageFieldName'),
                 duplicate: true,
-                fileSingleSizeLimit: imageMaxSize,    // 默认 2 M
+                fileSingleSizeLimit: imageMaxSize, // 默认 2 M
                 compress: editor.getOpt('imageCompressEnable') ? {
                     width: imageCompressBorder,
                     height: imageCompressBorder,
@@ -399,10 +401,10 @@
             // 当有文件添加进来时执行，负责view的创建
             function addFile(file) {
                 var $li = $('<li id="' + file.id + '">' +
-                    '<p class="title">' + file.name + '</p>' +
-                    '<p class="imgWrap"></p>' +
-                    '<p class="progress"><span></span></p>' +
-                    '</li>'),
+                        '<p class="title">' + file.name + '</p>' +
+                        '<p class="imgWrap"></p>' +
+                        '<p class="progress"><span></span></p>' +
+                        '</li>'),
 
                     $btns = $('<div class="file-panel">' +
                         '<span class="cancel">' + lang.uploadDelete + '</span>' +
@@ -480,17 +482,20 @@
                     } else if (cur === 'progress') {
                         $info.hide();
                         $prgress.css('display', 'block');
-                    } else if (cur === 'complete') {
-                    }
+                    } else if (cur === 'complete') {}
 
                     $li.removeClass('state-' + prev).addClass('state-' + cur);
                 });
 
                 $li.on('mouseenter', function () {
-                    $btns.stop().animate({ height: 30 });
+                    $btns.stop().animate({
+                        height: 30
+                    });
                 });
                 $li.on('mouseleave', function () {
-                    $btns.stop().animate({ height: 0 });
+                    $btns.stop().animate({
+                        height: 0
+                    });
                 });
 
                 $btns.on('click', 'span', function () {
@@ -568,34 +573,39 @@
                             $queue.addClass('element-invisible');
                             $statusBar.addClass('element-invisible');
                             $placeHolder.removeClass('element-invisible');
-                            $progress.hide(); $info.hide();
+                            $progress.hide();
+                            $info.hide();
                             uploader.refresh();
                             break;
 
-                        /* 可以开始上传 */
+                            /* 可以开始上传 */
                         case 'ready':
                             $placeHolder.addClass('element-invisible');
                             $queue.removeClass('element-invisible');
                             $statusBar.removeClass('element-invisible');
-                            $progress.hide(); $info.show();
+                            $progress.hide();
+                            $info.show();
                             $upload.text(lang.uploadStart);
                             uploader.refresh();
                             break;
 
-                        /* 上传中 */
+                            /* 上传中 */
                         case 'uploading':
-                            $progress.show(); $info.hide();
+                            $progress.show();
+                            $info.hide();
                             $upload.text(lang.uploadPause);
                             break;
 
-                        /* 暂停上传 */
+                            /* 暂停上传 */
                         case 'paused':
-                            $progress.show(); $info.hide();
+                            $progress.show();
+                            $info.hide();
                             $upload.text(lang.uploadContinue);
                             break;
 
                         case 'confirm':
-                            $progress.show(); $info.hide();
+                            $progress.show();
+                            $info.hide();
                             $upload.text(lang.uploadStart);
 
                             stats = uploader.getStats();
@@ -606,7 +616,8 @@
                             break;
 
                         case 'finish':
-                            $progress.hide(); $info.show();
+                            $progress.hide();
+                            $info.show();
                             if (stats.uploadFailNum) {
                                 $upload.text(lang.uploadRetry);
                             } else {
@@ -629,7 +640,8 @@
             }
 
             function updateStatus() {
-                var text = '', stats;
+                var text = '',
+                    stats;
 
                 if (state === 'ready') {
                     text = lang.updateStatusReady.replace('_', fileCount).replace('_KB', WebUploader.formatSize(fileSize));
@@ -641,8 +653,8 @@
                 } else {
                     stats = uploader.getStats();
                     text = lang.updateStatusFinish.replace('_', fileCount).
-                        replace('_KB', WebUploader.formatSize(fileSize)).
-                        replace('_', stats.successNum);
+                    replace('_KB', WebUploader.formatSize(fileSize)).
+                    replace('_', stats.successNum);
 
                     if (stats.uploadFailNum) {
                         text += lang.updateStatusError.replace('_', stats.uploadFailNum);
@@ -729,15 +741,13 @@
                 }
             });
 
-            uploader.on('uploadError', function (file, code) {
-            });
+            uploader.on('uploadError', function (file, code) {});
             uploader.on('error', function (code, file) {
                 if (code == 'Q_TYPE_DENIED' || code == 'F_EXCEED_SIZE') {
                     addFile(file);
                 }
             });
-            uploader.on('uploadComplete', function (file, ret) {
-            });
+            uploader.on('uploadComplete', function (file, ret) {});
 
             $upload.on('click', function () {
                 if ($(this).hasClass('disabled')) {
@@ -757,7 +767,8 @@
             updateTotalProgress();
         },
         getQueueCount: function () {
-            var file, i, status, readyFile = 0, files = this.uploader.getFiles();
+            var file, i, status, readyFile = 0,
+                files = this.uploader.getFiles();
             for (i = 0; file = files[i++];) {
                 status = file.getStatus();
                 if (status == 'queued' || status == 'uploading' || status == 'progress') readyFile++;
@@ -773,12 +784,22 @@
                 prefix = editor.getOpt('imageUrlPrefix');
             for (i = 0; i < this.imageList.length; i++) {
                 data = this.imageList[i];
-                list.push({
-                    src: prefix + data.url,
-                    _src: prefix + data.url,
-                    alt: data.original,
-                    floatStyle: align
-                });
+                if (data.url && data.url.indexOf('/Content') === 0) {
+                    list.push({
+                        src: data.url,
+                        _src: data.url,
+                        alt: data.original,
+                        floatStyle: align
+                    });
+                } else {
+                    list.push({
+                        src: prefix + data.url,
+                        _src: prefix + data.url,
+                        alt: data.original,
+                        floatStyle: align
+                    });
+                }
+
             }
             return list;
         }
@@ -946,7 +967,9 @@
             }
         },
         getInsertList: function () {
-            var i, lis = this.list.children, list = [], align = getAlign();
+            var i, lis = this.list.children,
+                list = [],
+                align = getAlign();
             for (i = 0; i < lis.length; i++) {
                 if (domUtils.hasClass(lis[i], 'selected')) {
                     var img = lis[i].firstChild,
