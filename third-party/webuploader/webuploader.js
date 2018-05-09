@@ -4340,7 +4340,7 @@
                     opts = me.options,
                     lable = $( document.createElement('label') ),
                     input = $( document.createElement('input') ),
-                    arr, i, len, mouseHandler;
+                    arr, i, len, mouseHandler, changeHandler;
     
                 input.attr( 'type', 'file' );
                 input.attr( 'name', opts.name );
@@ -4381,27 +4381,52 @@
                     owner.trigger( e.type );
                 };
     
-                input.on( 'change', function( e ) {
-                    var fn = arguments.callee,
-                        clone;
+                                //input.on( 'change', function( e ) {
+                //    var fn = arguments.callee,
+                //        clone;
     
+                //    me.files = e.target.files;
+    
+                //    // reset input
+                //    clone = this.cloneNode( true );
+                //    this.parentNode.replaceChild( clone, this );
+    
+                //    input.off();
+                //    input = $( clone ).on( 'change', fn )
+                //            .on( 'mouseenter mouseleave', mouseHandler );
+    
+                //    owner.trigger('change');
+                //});
+
+              //使用WebUploader 0.1.8-alpha 代码块 解决chrome不能依次选择三张相同图片，取消时出现错误图片 [余昭 2018-05-09]
+                changeHandler = function (e) {
+                    var clone;
+                 
+                    // 解决chrome 56 第二次打开文件选择器，然后点击取消，依然会触发change事件的问题
+                    //*实际发现并不是这句代码起作用 而且使用命名函数 changeHandler替代arguments.callee
+                    if (e.target.files.length === 0) {
+                        return false;
+                    }
+
+                    // 第一次上传图片后，第二次再点击弹出文件选择器窗，等待
                     me.files = e.target.files;
-    
+
+
                     // reset input
-                    clone = this.cloneNode( true );
-                    this.parentNode.replaceChild( clone, this );
-    
+                    clone = this.cloneNode(true);
+                    clone.value = null;
+                    this.parentNode.replaceChild(clone, this);
+
                     input.off();
-                    input = $( clone ).on( 'change', fn )
-                            .on( 'mouseenter mouseleave', mouseHandler );
-    
+                    input = $(clone).on('change', changeHandler)
+                        .on('mouseenter mouseleave', mouseHandler);
+
                     owner.trigger('change');
-                });
-    
+                }
+                input.on('change', changeHandler);
                 lable.on( 'mouseenter mouseleave', mouseHandler );
     
-            },
-    
+            },   
     
             getFiles: function() {
                 return this.files;
