@@ -91,6 +91,8 @@ UE.plugin.register('autoupload', function (){
 
         fd.append(fieldName, file, file.name || ('blob.' + file.type.substr('image/'.length)));
         fd.append('type', 'ajax');
+        //[2018-08-31 尹磊] 截图粘贴上传添加__RequestVerificationToken，预防CSRF攻击。
+        fd.append('__RequestVerificationToken', $('input[name="__RequestVerificationToken"]').val() || '');
         xhr.open("post", url, true);
         xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
         xhr.addEventListener('load', function (e) {

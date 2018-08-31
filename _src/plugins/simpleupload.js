@@ -20,16 +20,21 @@ UE.plugin.register('simpleupload', function () {
             var timestrap = (+new Date()).toString(36),
                 wrapper,
                 btnIframeDoc,
-                btnIframeBody;
+                btnIframeBody,
+                requestToken;
 
             btnIframeDoc = (btnIframe.contentDocument || btnIframe.contentWindow.document);
             btnIframeBody = btnIframeDoc.body;
             wrapper = btnIframeDoc.createElement('div');
+            //[2018-08-22 尹磊] 单图上传添加__RequestVerificationToken，预防CSRF攻击。
+            var $__RequestVerificationToken = $('input[name="__RequestVerificationToken"]');
+            requestToken = $__RequestVerificationToken.length ? $__RequestVerificationToken.val() : '';
 
             wrapper.innerHTML = '<form id="edui_form_' + timestrap + '" target="edui_iframe_' + timestrap + '" method="POST" enctype="multipart/form-data" action="' + me.getOpt('serverUrl') + '" ' +
                 'style="' + btnStyle + '">' +
                 '<input id="edui_input_' + timestrap + '" type="file" accept="image/gif,image/jpeg,image/png,image/jpg,image/bmp" name="' + me.options.imageFieldName + '" ' +
                 'style="' + btnStyle + '">' +
+                '<input type="hidden" name="__RequestVerificationToken" value="' + requestToken + '">' +
                 '</form>' +
                 '<iframe id="edui_iframe_' + timestrap + '" name="edui_iframe_' + timestrap + '" style="display:none;width:0;height:0;border:0;margin:0;padding:0;position:absolute;"></iframe>';
 
