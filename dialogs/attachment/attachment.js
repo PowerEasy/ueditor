@@ -165,7 +165,13 @@
                 fileVal: editor.getOpt('fileFieldName'),
                 duplicate: true,
                 fileSingleSizeLimit: fileMaxSize,
-                compress: false
+                timeout: 60 * 60 * 1000,    // 60分钟
+                compress: false,
+                //[2018-08-22 尹磊] 附件上传添加__RequestVerificationToken，预防CSRF攻击。
+                // 文件上传请求的参数表，每次发送都会发送此对象中的参数。
+                formData: {
+                    __RequestVerificationToken: window.parent.$('input[name="__RequestVerificationToken"]').val()
+                }
             });
             uploader.addButton({
                 id: '#filePickerBlock'
@@ -485,9 +491,7 @@
 
             uploader.on('uploadBeforeSend', function (file, data, header) {
                 //这里可以通过data对象添加POST参数
-                if (actionUrl.toLowerCase().indexOf('jsp') != -1) {
-                    header['X_Requested_With'] = 'XMLHttpRequest';
-                }
+                header['X_Requested_With'] = 'XMLHttpRequest';
             });
 
             uploader.on('uploadProgress', function (file, percentage) {
@@ -505,7 +509,7 @@
                     var responseText = (ret._raw || ret),
                         json = utils.str2json(responseText);
                     if (json.state == 'SUCCESS') {
-                        _this.fileList.push(json);
+                       _this.fileList.push(json); 
                         $file.append('<span class="success"></span>');
                     } else {
                         $file.find('.error').text(json.state).show();
@@ -555,6 +559,7 @@
                 prefix = editor.getOpt('fileUrlPrefix');
             for (i = 0; i < this.fileList.length; i++) {
                 data = this.fileList[i];
+
                 link = data.url;
                 list.push({
                     title: data.original || link.substr(link.lastIndexOf('/') + 1),
@@ -633,7 +638,7 @@
             if(!_this.listEnd && !this.isLoadingData) {
                 this.isLoadingData = true;
                 ajax.request(editor.getActionUrl(editor.getOpt('fileManagerActionName')), {
-                    timeout: 100000,
+                    timeout: 60 * 60 * 1000,    // 60分钟
                     data: utils.extend({
                             start: this.listIndex,
                             size: this.listSize

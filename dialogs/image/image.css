@@ -1,4 +1,4 @@
-@charset "utf-8";
+﻿@charset "utf-8";
 /* dialog样式 */
 .wrapper {
     zoom: 1;
@@ -161,7 +161,8 @@
 }
 #remote #width,
 #remote #height{
-    width: 20px;
+    /*修改源代码：width:20px改为width:32px*/
+    width: 32px;
     margin-left: 2px;
     margin-right: 2px;
 }

@@ -120,7 +120,6 @@ $G("preReplaceBtn").onclick = function (txt, dir, mcase) {
 };
 //替换
 $G("repalceBtn").onclick = function () {
-    editor.trigger('clearLastSearchResult');
     var findtxt = $G("findtxt1").value.replace(/^\s|\s$/g, ""), obj,
         replacetxt = $G("replacetxt").value.replace(/^\s|\s$/g, "");
     if (!findtxt) {
@@ -163,8 +162,3 @@ var frCommond = function (obj) {
     return editor.execCommand("searchreplace", obj);
 };
 switchTab("searchtab");
-
-
-dialog.onclose = function(){
-    editor.trigger('clearLastSearchResult')
-};
