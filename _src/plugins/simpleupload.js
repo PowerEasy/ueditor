@@ -56,12 +56,34 @@ UE.plugin.register('simpleupload', function () {
 
             domUtils.on(input, 'change', function () {
                 if (!input.value) return;
+                
+                /* 判断后端配置是否没有加载成功 */
+                if (!me.getOpt('imageActionName')) {
+                    alert(me.getLang('autoupload.errorLoadConfig'));
+                    return;
+                }
+
+                var filename = input.value,
+                    fileext = filename ? filename.substr(filename.lastIndexOf('.')) : '',
+                    allowFiles = me.getOpt('imageAllowFiles'),
+                    fileSize = input.files[0].size,
+                    maxSize = me.getOpt('imageMaxSize');
+
+                if (!fileext || (allowFiles && (allowFiles.join('') + '.').indexOf(fileext.toLowerCase() + '.') == -1)) {
+                    alert(me.getLang('simpleupload.exceedTypeError') + '，请上传' + allowFiles + '的文件。');
+                    return;
+                }
+
+                if (fileSize > maxSize) {
+                    alert(me.getLang('simpleupload.exceedSizeError') + '，请上传' + maxSize/1024/1024 + 'M以内的文件。');
+                    return;
+                }
+
                 var loadingId = 'loading_' + (+new Date()).toString(36);
                 var params = utils.serializeParam(me.queryCommandValue('serverparam')) || '';
 
                 var imageActionUrl = me.getActionUrl(me.getOpt('imageActionName'));
-                var allowFiles = me.getOpt('imageAllowFiles');
-
+                
                 me.focus();
                 me.execCommand('inserthtml', '<img class="loadingclass" id="' + loadingId + '" src="' + me.options.themePath + me.options.theme + '/images/spacer.gif">');
 
@@ -106,20 +128,7 @@ UE.plugin.register('simpleupload', function () {
                         });
                     }
                 }
-
-                /* 判断后端配置是否没有加载成功 */
-                if (!me.getOpt('imageActionName')) {
-                    errorHandler(me.getLang('autoupload.errorLoadConfig'));
-                    return;
-                }
-                // 判断文件格式是否错误
-                var filename = input.value,
-                    fileext = filename ? filename.substr(filename.lastIndexOf('.')) : '';
-                if (!fileext || (allowFiles && (allowFiles.join('') + '.').indexOf(fileext.toLowerCase() + '.') == -1)) {
-                    showErrorLoader(me.getLang('simpleupload.exceedTypeError'));
-                    return;
-                }
-
+                
                 domUtils.on(iframe, 'load', callback);
                 form.action = utils.formatUrl(imageActionUrl + (imageActionUrl.indexOf('?') == -1 ? '?' : '&') + params);
                 form.submit();
