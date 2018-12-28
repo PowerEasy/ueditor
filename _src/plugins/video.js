@@ -4,8 +4,8 @@
  * @since 1.2.6.1
  */
 
-UE.plugins['video'] = function (){
-    var me =this;
+UE.plugins['video'] = function () {
+    var me = this;
 
     /**
      * 创建插入视频字符窜
@@ -16,22 +16,23 @@ UE.plugins['video'] = function (){
      * @param toEmbed 是否以flash代替显示
      * @param addParagraph  是否需要添加P 标签
      */
-    function creatInsertStr(url,width,height,id,align,classname,type){
+    function creatInsertStr(url, width, height, id, align, classname, type) {
         var str;
-        switch (type){
+        switch (type) {
             case 'image':
-                str = '<img ' + (id ? 'id="' + id+'"' : '') + ' width="'+ width +'" height="' + height + '" _url="'+url+'" class="' + classname.replace(/\bvideo-js\b/, '') + '"'  +
-                    ' src="' + me.options.UEDITOR_HOME_URL+'themes/default/images/spacer.gif" style="background:url('+me.options.UEDITOR_HOME_URL+'themes/default/images/videologo.gif) no-repeat center center; border:1px solid gray;'+(align ? 'float:' + align + ';': '')+'" />'
+                str = '<img ' + (id ? 'id="' + id + '"' : '') + ' width="' + width + '" height="' + height + '" _url="' + url + '" class="' + classname.replace(/\bvideo-js\b/, '') + '"' +
+                    ' src="' + me.options.UEDITOR_HOME_URL + 'themes/default/images/spacer.gif" style="background:url(' + me.options.UEDITOR_HOME_URL + 'themes/default/images/videologo.gif) no-repeat center center; border:1px solid gray;' + (align ? 'float:' + align + ';' : '') + '" />'
                 break;
             case 'embed':
-                str = '<embed type="application/x-shockwave-flash" class="' + classname + '" pluginspage="http://www.macromedia.com/go/getflashplayer"' +
-                    ' src="' +  utils.html(url) + '" width="' + width  + '" height="' + height  + '"'  + (align ? ' style="float:' + align + '"': '') +
-                    ' wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true" >';
-                break;
+                //生成视频标签时统一使用video
+                // str = '<embed type="application/x-shockwave-flash" class="' + classname + '" pluginspage="http://www.macromedia.com/go/getflashplayer"' +
+                //     ' src="' +  utils.html(url) + '" width="' + width  + '" height="' + height  + '"'  + (align ? ' style="float:' + align + '"': '') +
+                //     ' wmode="transparent" play="true" loop="false" menu="false" allowscriptaccess="never" allowfullscreen="true" >';
+                // break;
             case 'video':
                 var ext = url.substr(url.lastIndexOf('.') + 1);
-                if(ext == 'ogv') ext = 'ogg';
-                str = '<video' + (id ? ' id="' + id + '"' : '') + ' class="' + classname + ' video-js" ' + (align ? ' style="float:' + align + '"': '') +
+                if (ext == 'ogv') ext = 'ogg';
+                str = '<video' + (id ? ' id="' + id + '"' : '') + ' class="' + classname + ' video-js" ' + (align ? ' style="float:' + align + '"' : '') +
                     ' controls preload="none" width="' + width + '" height="' + height + '" src="' + url + '" data-setup="{}">' +
                     '<source src="' + url + '" type="video/' + ext + '" /></video>';
                 break;
@@ -39,24 +40,24 @@ UE.plugins['video'] = function (){
         return str;
     }
 
-    function switchImgAndVideo(root,img2video){
-        utils.each(root.getNodesByTagName(img2video ? 'img' : 'embed video'),function(node){
+    function switchImgAndVideo(root, img2video) {
+        utils.each(root.getNodesByTagName(img2video ? 'img' : 'embed video'), function (node) {
             var className = node.getAttr('class');
-            if(className && className.indexOf('edui-faked-video') != -1){
-                var html = creatInsertStr( img2video ? node.getAttr('_url') : node.getAttr('src'),node.getAttr('width'),node.getAttr('height'),null,node.getStyle('float') || '',className,img2video ? 'embed':'image');
-                node.parentNode.replaceChild(UE.uNode.createElement(html),node);
+            if (className && className.indexOf('edui-faked-video') != -1) {
+                var html = creatInsertStr(img2video ? node.getAttr('_url') : node.getAttr('src'), node.getAttr('width'), node.getAttr('height'), null, node.getStyle('float') || '', className, img2video ? 'embed' : 'image');
+                node.parentNode.replaceChild(UE.uNode.createElement(html), node);
             }
-            if(className && className.indexOf('edui-upload-video') != -1){
-                var html = creatInsertStr( img2video ? node.getAttr('_url') : node.getAttr('src'),node.getAttr('width'),node.getAttr('height'),null,node.getStyle('float') || '',className,img2video ? 'video':'image');
-                node.parentNode.replaceChild(UE.uNode.createElement(html),node);
+            if (className && className.indexOf('edui-upload-video') != -1) {
+                var html = creatInsertStr(img2video ? node.getAttr('_url') : node.getAttr('src'), node.getAttr('width'), node.getAttr('height'), null, node.getStyle('float') || '', className, img2video ? 'video' : 'image');
+                node.parentNode.replaceChild(UE.uNode.createElement(html), node);
             }
         })
     }
 
-    me.addOutputRule(function(root){
-        switchImgAndVideo(root,true)
+    me.addOutputRule(function (root) {
+        switchImgAndVideo(root, true)
     });
-    me.addInputRule(function(root){
+    me.addInputRule(function (root) {
         switchImgAndVideo(root)
     });
 
@@ -127,33 +128,35 @@ UE.plugins['video'] = function (){
      * ```
      */
     me.commands["insertvideo"] = {
-        execCommand: function (cmd, videoObjs, type){
-            videoObjs = utils.isArray(videoObjs)?videoObjs:[videoObjs];
+        execCommand: function (cmd, videoObjs, type) {
+            videoObjs = utils.isArray(videoObjs) ? videoObjs : [videoObjs];
 
-            if(me.fireEvent('beforeinsertvideo', videoObjs) === true){
+            if (me.fireEvent('beforeinsertvideo', videoObjs) === true) {
                 return;
             }
 
-            var html = [],id = 'tmpVedio', cl;
-            for(var i=0,vi,len = videoObjs.length;i<len;i++){
+            var html = [],
+                id = 'tmpVedio',
+                cl;
+            for (var i = 0, vi, len = videoObjs.length; i < len; i++) {
                 vi = videoObjs[i];
-                cl = (type == 'upload' ? 'edui-upload-video video-js vjs-default-skin':'edui-faked-video');
-                html.push(creatInsertStr( vi.url, vi.width || 420,  vi.height || 280, id + i, null, cl, 'image'));
+                cl = (type == 'upload' ? 'edui-upload-video video-js vjs-default-skin' : 'edui-faked-video');
+                html.push(creatInsertStr(vi.url, vi.width || 420, vi.height || 280, id + i, null, cl, 'image'));
             }
-            me.execCommand("inserthtml",html.join(""),true);
+            me.execCommand("inserthtml", html.join(""), true);
             var rng = this.selection.getRange();
-            for(var i= 0,len=videoObjs.length;i<len;i++){
-                var img = this.document.getElementById('tmpVedio'+i);
-                domUtils.removeAttributes(img,'id');
+            for (var i = 0, len = videoObjs.length; i < len; i++) {
+                var img = this.document.getElementById('tmpVedio' + i);
+                domUtils.removeAttributes(img, 'id');
                 rng.selectNode(img).select();
-                me.execCommand('imagefloat',videoObjs[i].align)
+                me.execCommand('imagefloat', videoObjs[i].align)
             }
 
             me.fireEvent('afterinsertvideo', videoObjs);
         },
-        queryCommandState : function(){
+        queryCommandState: function () {
             var img = me.selection.getRange().getClosedNode(),
-                flag = img && (img.className == "edui-faked-video" || img.className.indexOf("edui-upload-video")!=-1);
+                flag = img && (img.className == "edui-faked-video" || img.className.indexOf("edui-upload-video") != -1);
             return flag ? 1 : 0;
         }
     };
